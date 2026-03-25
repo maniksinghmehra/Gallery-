@@ -320,17 +320,16 @@
             return card;
         }
 
-        // 2. LOAD GALLERY (Local JSON Fetch)
+        // 2. LOAD GALLERY (API Fetch)
         async function loadGallery() {
             try {
-                const res = await fetch("photos.json");
+                const res = await fetch("/api/photos");
                 const photos = await res.json();
 
                 const gallery = document.getElementById("gallery");
                 gallery.innerHTML = "";
 
-                // Reverse so newest additions to the JSON appear first
-                photos.reverse().forEach(photo => {
+                photos.forEach(photo => {
                     const card = createCard(photo);
                     gallery.appendChild(card);
                 });
