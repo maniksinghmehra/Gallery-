@@ -155,22 +155,17 @@
             filter: grayscale(0%);
         }
 
-        /* TEXT */
+        /* TEXT - MINIMALIST UPDATE */
         .meta {
             margin-top: 12px;
         }
 
-        .title {
-            font-family: 'Space Grotesk', sans-serif;
+        .meta h3 {
             font-size: 13px;
-            letter-spacing: 0.5px;
-        }
-
-        .caption {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 5px;
-            line-height: 1.4;
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            text-transform: lowercase;
+            opacity: 0.6;
         }
 
         /* VIEWER */
@@ -209,16 +204,11 @@
             color: #ddd;
             text-align: center;
             max-width: 500px;
-        }
-
-        .viewer .title {
-            font-size: 14px;
-        }
-
-        .viewer .caption {
-            font-size: 12px;
-            color: #aaa;
-            margin-top: 6px;
+            /* Matches the new card aesthetic */
+            font-size: 13px;
+            letter-spacing: 0.12em;
+            text-transform: lowercase;
+            opacity: 0.8;
         }
 
         /* CLOSE */
@@ -279,10 +269,7 @@
     <div class="viewer" id="viewer">
         <div class="close" onclick="closeViewer()">×</div>
         <img id="viewer-img" alt="Enlarged view">
-        <div class="text">
-            <div class="title" id="viewer-title"></div>
-            <div class="caption" id="viewer-caption"></div>
-        </div>
+        <div class="text" id="viewer-text"></div>
     </div>
 
     <div class="footer">
@@ -300,10 +287,9 @@
             card.className = "card";
 
             card.innerHTML = `
-                <img src="${photo.img}" alt="${photo.title}">
+                <img src="${photo.img}" alt="${photo.caption || 'Archive image'}">
                 <div class="meta">
-                    <div class="title">${photo.title}</div>
-                    <div class="caption">${photo.caption}</div>
+                    <h3>${photo.caption || ""}</h3>
                 </div>
             `;
 
@@ -365,12 +351,10 @@
 
             const imgElement = card.querySelector("img");
             const img = imgElement.src;
-            const title = card.querySelector(".title").innerText;
-            const caption = card.querySelector(".caption").innerText;
+            const caption = card.querySelector("h3").innerText;
 
             document.getElementById("viewer-img").src = img;
-            document.getElementById("viewer-title").innerText = title;
-            document.getElementById("viewer-caption").innerText = caption;
+            document.getElementById("viewer-text").innerText = caption;
         }
 
         function nextImage() {
