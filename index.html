@@ -204,7 +204,6 @@
             color: #ddd;
             text-align: center;
             max-width: 500px;
-            /* Matches the new card aesthetic */
             font-size: 13px;
             letter-spacing: 0.12em;
             text-transform: lowercase;
@@ -286,8 +285,9 @@
             const card = document.createElement("div");
             card.className = "card";
 
+            // Added native lazy loading
             card.innerHTML = `
-                <img src="${photo.img}" alt="${photo.caption || 'Archive image'}">
+                <img src="${photo.img}" loading="lazy" alt="${photo.caption || 'Archive image'}">
                 <div class="meta">
                     <h3>${photo.caption || ""}</h3>
                 </div>
@@ -314,6 +314,12 @@
 
                 const gallery = document.getElementById("gallery");
                 gallery.innerHTML = "";
+
+                // Added Empty State UX
+                if (photos.length === 0) {
+                    gallery.innerHTML = "<p style='opacity:0.5;text-align:center;width:100%;grid-column:1/-1;'>nothing yet</p>";
+                    return;
+                }
 
                 photos.forEach(photo => {
                     const card = createCard(photo);
@@ -348,6 +354,9 @@
         function showImage(index) {
             const cards = document.querySelectorAll(".card");
             const card = cards[index];
+
+            // Added Safety Guard Clause
+            if (!card) return;
 
             const imgElement = card.querySelector("img");
             const img = imgElement.src;
