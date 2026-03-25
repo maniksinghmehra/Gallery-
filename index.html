@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500&family=Inter:wght@300;400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #f8f6f2;
+            --text: #111;
+            --muted: #8a8a8a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* BODY */
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* FILM GRAIN */
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+            opacity: 0.08;
+            mix-blend-mode: overlay;
+            animation: grainMove 0.8s steps(2) infinite;
+        }
+
+        @keyframes grainMove {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            25% {
+                transform: translate(-5%, 5%);
+            }
+
+            50% {
+                transform: translate(-10%, 0);
+            }
+
+            75% {
+                transform: translate(5%, -5%);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        /* CINEMATIC TONE */
+        .cinematic {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            background: radial-gradient(circle at center,
+                    rgba(0, 0, 0, 0) 40%,
+                    rgba(0, 0, 0, 0.25) 100%);
+            mix-blend-mode: multiply;
+        }
+
+        /* HOVER DIM LAYER */
+        .hover-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            pointer-events: none;
+            transition: background 0.4s ease;
+            z-index: 1;
+        }
+
+        /* NAV */
+        nav {
+            text-align: center;
+            padding: 40px 0 10px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 12px;
+            letter-spacing: 8px;
+            color: var(--text);
+            opacity: 0.6;
+            transform: scaleY(0.9);
+            display: inline-block;
+        }
+
+        /* GALLERY */
+        .gallery {
+            width: 88%;
+            max-width: 1100px;
+            margin: 60px auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 70px;
+            transition: 0.3s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card {
+            cursor: pointer;
+            transition: transform 0.4s ease, filter 0.4s ease;
+            position: relative;
+        }
+
+        /* DEPTH OF FIELD HOVER EFFECTS */
+        .card:hover {
+            transform: scale(1.03);
+            filter: brightness(1.05) contrast(1.05);
+            z-index: 5;
+        }
+
+        .gallery:hover .card:not(:hover) {
+            filter: brightness(0.92);
+        }
+
+        /* IMAGE */
+        .card img {
+            width: 100%;
+            display: block;
+            filter: grayscale(10%);
+            transition: filter 0.4s, opacity 0.4s ease;
+        }
+
+        .card:hover img {
+            filter: grayscale(0%);
+        }
+
+        /* TEXT */
+        .meta {
+            margin-top: 12px;
+        }
+
+        .title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        .caption {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        /* VIEWER */
+        .viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #111 0%, #000 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1001;
+            padding: 20px;
+
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .viewer.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .viewer img {
+            max-width: 90%;
+            max-height: 70%;
+            margin-bottom: 25px;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.08);
+        }
+
+        .viewer .text {
+            color: #ddd;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .viewer .title {
+            font-size: 14px;
+        }
+
+        .viewer .caption {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 6px;
+        }
+
+        /* CLOSE */
+        .close {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+            padding: 10px;
+            z-index: 1002;
+        }
+
+        .close:hover {
+            opacity: 1;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: var(--muted);
+            padding: 60px 0 30px;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: 1fr;
+                gap: 45px;
+            }
+
+            .logo {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="grain"></div>
+    <div class="cinematic"></div>
+    <div class="hover-bg" id="hover-bg"></div>
+
+    <nav>
+        <div class="logo">GALLERY</div>
+    </nav>
+
+    <section class="gallery" id="gallery"></section>
+
+    <div class="viewer" id="viewer">
+        <div class="close" onclick="closeViewer()">×</div>
+        <img id="viewer-img" alt="Enlarged view">
+        <div class="text">
+            <div class="title" id="viewer-title"></div>
+            <div class="caption" id="viewer-caption"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        an archive of moments
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 1. FIREBASE SETUP
+        const firebaseConfig = {
+            apiKey: "AIzaSyCDnBIWOkLceLd7m0p0tNfOa-TYUG0uC3o",
+            authDomain: "galleryplus-a4941.firebaseapp.com",
+            projectId: "galleryplus-a4941",
+            storageBucket: "galleryplus-a4941.appspot.com", // FIXED BUCKET URL
+            messagingSenderId: "403278010664",
+            appId: "1:403278010664:web:1453bcda8d8215b7f9181d"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 2. DOM ELEMENTS
+        const viewer = document.getElementById("viewer");
+        const hoverBg = document.getElementById("hover-bg");
+        let currentIndex = 0;
+
+        // 3. CREATE CARD 
+        function createCard(photo) {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <img src="${photo.img}" alt="${photo.title}">
+                <div class="meta">
+                    <div class="title">${photo.title}</div>
+                    <div class="caption">${photo.caption}</div>
+                </div>
+            `;
+
+            card.onclick = () => openViewer(card);
+
+            card.addEventListener("mouseenter", () => {
+                hoverBg.style.background = "rgba(0,0,0,0.6)";
+            });
+
+            card.addEventListener("mouseleave", () => {
+                hoverBg.style.background = "rgba(0,0,0,0)";
+            });
+
+            return card;
+        }
+
+        // 4. LOAD GALLERY (Firestore Real-time Listener)
+        function loadGallery() {
+            const gallery = document.getElementById("gallery");
+
+            db.collection("photos")
+                .orderBy("timestamp", "desc")
+                .onSnapshot(snapshot => {
+                    gallery.innerHTML = "";
+
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const card = createCard(data);
+                        gallery.appendChild(card);
+                    });
+                });
+        }
+
+        // 5. VIEWER NAVIGATION & ANIMATION
+        function openViewer(card) {
+            const cards = document.querySelectorAll(".card");
+            currentIndex = Array.from(cards).indexOf(card);
+
+            showImage(currentIndex);
+            viewer.classList.add("active");
+
+            const viewerImg = document.getElementById("viewer-img");
+            viewerImg.style.transform = "scale(1.05)";
+            viewerImg.style.transition = "transform 0.6s ease";
+
+            setTimeout(() => {
+                viewerImg.style.transform = "scale(1)";
+            }, 50);
+        }
+
+        function closeViewer() {
+            viewer.classList.remove("active");
+        }
+
+        function showImage(index) {
+            const cards = document.querySelectorAll(".card");
+            const card = cards[index];
+
+            const imgElement = card.querySelector("img");
+            const img = imgElement.src;
+            const title = card.querySelector(".title").innerText;
+            const caption = card.querySelector(".caption").innerText;
+
+            document.getElementById("viewer-img").src = img;
+            document.getElementById("viewer-title").innerText = title;
+            document.getElementById("viewer-caption").innerText = caption;
+        }
+
+        function nextImage() {
+            const cards = document.querySelectorAll(".card");
+            currentIndex = (currentIndex + 1) % cards.length;
+            showImage(currentIndex);
+        }
+
+        function prevImage() {
+            const cards = document.querySelectorAll(".card");
+            currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+            showImage(currentIndex);
+        }
+
+        // 6. EVENT LISTENERS
+        viewer.addEventListener("click", function (e) {
+            if (e.target === this) {
+                closeViewer();
+            }
+        });
+
+        document.addEventListener("keydown", function (e) {
+            if (viewer.classList.contains("active")) {
+                if (e.key === "Escape") closeViewer();
+                if (e.key === "ArrowRight") nextImage();
+                if (e.key === "ArrowLeft") prevImage();
+            }
+        });
+
+        // Initialize Firebase load
+        loadGallery();
+    </script>
+
+</body>
+
+</html>
