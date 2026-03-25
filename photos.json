@@ -1,12 +1,6 @@
-[
+ [
   {
-    "img": "https://res.cloudinary.com/dcudpsaqr/image/upload/your-image.jpg",
-    "title": "your title",
-    "caption": "your caption"
-  },
-  {
-    "img": "https://picsum.photos/600/800",
-    "title": "first",
-    "caption": "it begins"
+    "img": "https://res.cloudinary.com/dcudpsaqr/image/upload/REAL.jpg",
+    "caption": "real text"
   }
 ]
