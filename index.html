@@ -285,9 +285,9 @@
             const card = document.createElement("div");
             card.className = "card";
 
-            // Upgraded onerror to hide the whole broken card, not just the image box
+            // Cleaned up the image tag - no more onerror hack
             card.innerHTML = `
-                <img src="${photo.img}" loading="lazy" alt="${photo.caption || 'Archive image'}" onerror="this.closest('.card').style.display='none'">
+                <img src="${photo.img}" loading="lazy" alt="${photo.caption || 'Archive image'}">
                 <div class="meta">
                     <h3>${photo.caption || ""}</h3>
                 </div>
@@ -312,18 +312,26 @@
                 const res = await fetch("/api/photos");
                 const photos = await res.json();
 
+                // Debug logs to see the truth
+                console.log("RAW:", photos);
+
+                // Upstream data validation
+                const validPhotos = photos.filter(photo => {
+                    return photo.img && photo.img.startsWith("https://res.cloudinary.com");
+                });
+
+                console.log("VALID:", validPhotos);
+
                 const gallery = document.getElementById("gallery");
                 gallery.innerHTML = "";
 
-                if (photos.length === 0) {
+                // Empty state handled dynamically
+                if (validPhotos.length === 0) {
                     gallery.innerHTML = "<p style='opacity:0.5;text-align:center;width:100%;grid-column:1/-1;'>nothing yet</p>";
                     return;
                 }
 
-                photos.forEach(photo => {
-                    // Safe Guard: Skip entirely if URL is missing or clearly invalid
-                    if (!photo.img || !photo.img.startsWith("https")) return;
-
+                validPhotos.forEach(photo => {
                     const card = createCard(photo);
                     gallery.appendChild(card);
                 });
@@ -335,7 +343,8 @@
 
         // 3. VIEWER NAVIGATION & ANIMATION
         function openViewer(card) {
-            const cards = document.querySelectorAll(".card:not([style*='display: none'])"); // Ignore hidden broken cards
+            // Reverted to clean selectors
+            const cards = document.querySelectorAll(".card");
             currentIndex = Array.from(cards).indexOf(card);
 
             showImage(currentIndex);
@@ -355,7 +364,7 @@
         }
 
         function showImage(index) {
-            const cards = document.querySelectorAll(".card:not([style*='display: none'])");
+            const cards = document.querySelectorAll(".card");
             const card = cards[index];
 
             if (!card) return;
@@ -369,13 +378,13 @@
         }
 
         function nextImage() {
-            const cards = document.querySelectorAll(".card:not([style*='display: none'])");
+            const cards = document.querySelectorAll(".card");
             currentIndex = (currentIndex + 1) % cards.length;
             showImage(currentIndex);
         }
 
         function prevImage() {
-            const cards = document.querySelectorAll(".card:not([style*='display: none'])");
+            const cards = document.querySelectorAll(".card");
             currentIndex = (currentIndex - 1 + cards.length) % cards.length;
             showImage(currentIndex);
         }
