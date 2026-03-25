@@ -289,29 +289,12 @@
         an archive of moments
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
     <script>
-        // 1. FIREBASE SETUP
-        const firebaseConfig = {
-            apiKey: "AIzaSyCDnBIWOkLceLd7m0p0tNfOa-TYUG0uC3o",
-            authDomain: "galleryplus-a4941.firebaseapp.com",
-            projectId: "galleryplus-a4941",
-            storageBucket: "galleryplus-a4941.appspot.com", // FIXED BUCKET URL
-            messagingSenderId: "403278010664",
-            appId: "1:403278010664:web:1453bcda8d8215b7f9181d"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // 2. DOM ELEMENTS
         const viewer = document.getElementById("viewer");
         const hoverBg = document.getElementById("hover-bg");
         let currentIndex = 0;
 
-        // 3. CREATE CARD 
+        // 1. CREATE CARD 
         function createCard(photo) {
             const card = document.createElement("div");
             card.className = "card";
@@ -337,24 +320,26 @@
             return card;
         }
 
-        // 4. LOAD GALLERY (Firestore Real-time Listener)
-        function loadGallery() {
-            const gallery = document.getElementById("gallery");
+        // 2. LOAD GALLERY (Local JSON Fetch)
+        async function loadGallery() {
+            try {
+                const res = await fetch("photos.json");
+                const photos = await res.json();
 
-            db.collection("photos")
-                .orderBy("timestamp", "desc")
-                .onSnapshot(snapshot => {
-                    gallery.innerHTML = "";
+                const gallery = document.getElementById("gallery");
+                gallery.innerHTML = "";
 
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        const card = createCard(data);
-                        gallery.appendChild(card);
-                    });
+                // Reverse so newest additions to the JSON appear first
+                photos.reverse().forEach(photo => {
+                    const card = createCard(photo);
+                    gallery.appendChild(card);
                 });
+            } catch (error) {
+                console.error("Archive failed to load:", error);
+            }
         }
 
-        // 5. VIEWER NAVIGATION & ANIMATION
+        // 3. VIEWER NAVIGATION & ANIMATION
         function openViewer(card) {
             const cards = document.querySelectorAll(".card");
             currentIndex = Array.from(cards).indexOf(card);
@@ -401,7 +386,7 @@
             showImage(currentIndex);
         }
 
-        // 6. EVENT LISTENERS
+        // 4. EVENT LISTENERS
         viewer.addEventListener("click", function (e) {
             if (e.target === this) {
                 closeViewer();
@@ -416,7 +401,7 @@
             }
         });
 
-        // Initialize Firebase load
+        // Initialize 
         loadGallery();
     </script>
 
